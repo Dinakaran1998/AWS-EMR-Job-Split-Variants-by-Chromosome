@@ -2,7 +2,7 @@
 
 ## 🧬 AWS EMR Job: Split Variants by Chromosome
 
-**Script name:** `split_by_chromosome.py`
+**Script name:** `make_parquet.py`
 **Purpose:** Reads a variant CSV from S3, splits the data into per-chromosome Parquet files (1–22, X, Y, M), and writes them back to S3.
 
 ---
@@ -10,7 +10,7 @@
 ### 📂 1. Upload Script to S3
 
 ```bash
-aws s3 cp split_by_chromosome.py s3://aws-batch-input-bioinformatics/scripts/split_by_chromosome.py
+aws s3 cp make_parquet.py s3://aws-batch-input-bioinformatics/scripts/make_parquet.py
 ```
 
 **Example S3 layout:**
@@ -19,7 +19,7 @@ aws s3 cp split_by_chromosome.py s3://aws-batch-input-bioinformatics/scripts/spl
 s3://aws-batch-input-bioinformatics/
 │
 ├── scripts/
-│   └── split_by_chromosome.py
+│   └── make_parquet.py
 │
 ├── input/
 │   └── variants.csv                ← input file
@@ -77,7 +77,7 @@ Once the cluster is ready, run:
 aws emr add-steps \
 --cluster-id j-XXXXXXXXXXXXX \
 --steps Type=Spark,Name="ChromosomeSplitJob",ActionOnFailure=CONTINUE,\
-Args=[s3://aws-batch-input-bioinformatics/scripts/split_by_chromosome.py,\
+Args=[s3://aws-batch-input-bioinformatics/scripts/make_parquet.py,\
 --INPUT_PATH,s3://aws-batch-input-bioinformatics/input/variants.csv,\
 --OUTPUT_PATH,s3://aws-batch-input-bioinformatics/output_split/]
 ```
@@ -193,10 +193,11 @@ s3://aws-batch-input-bioinformatics/output_split/
 
 | Step | Action                                       |
 | ---- | -------------------------------------------- |
-| 1    | Upload `split_by_chromosome.py` to S3        |
+| 1    | Upload `make_parquet.py` to S3        |
 | 2    | Set up EMR roles                             |
 | 3    | Launch EMR cluster with Spark                |
 | 4    | Submit Spark step job                        |
 | 5    | Get output Parquet files split by chromosome |
 
 ---
+
